@@ -1,4 +1,4 @@
--- UI/core.lua
+\-- UI/core.lua
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
@@ -21,7 +21,7 @@ function Library:CreateWindow(config)
     
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "RayfieldStyleMenu"
-    ScreenGui.Parent = game:CoreGui
+    ScreenGui.Parent = game:GetService("CoreGui") -- Исправлено: правильный вызов сервиса через метод
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
     local MainFrame = Instance.new("Frame")
@@ -36,7 +36,6 @@ function Library:CreateWindow(config)
     UICorner.CornerRadius = UDim.new(0, 8)
     UICorner.Parent = MainFrame
 
-    -- Тултип (Полностью исправлен размер и синтаксис)
     local Tooltip = Instance.new("TextLabel")
     Tooltip.Name = "Tooltip"
     Tooltip.Size = UDim2.new(0, 180, 0, 0)
@@ -57,7 +56,7 @@ function Library:CreateWindow(config)
     TooltipPadding.PaddingRight = UDim.new(0, 6)
     TooltipPadding.Parent = Tooltip
 
-    -- Логика перетаскивания окна (Drag)
+    -- Логика Drag (Перетаскивание менюшки)
     local dragging, dragInput, dragStart, startPos
     MainFrame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -167,29 +166,30 @@ function Library:CreateWindow(config)
 
         local TabAPI = {}
         local baseUrl = "https://raw.githubusercontent.com/geragori11/XMENUE/refs/heads/main/UI/options/"
+        local optCache = "?t=" .. math.random(1, 99999)
         
         function TabAPI:AddText(text)
-            local targetUrl = baseUrl .. "text.lua"
-            local code = assert(game:HttpGet(targetUrl), "404 Not Found: " .. targetUrl)
-            return assert(loadstring(code), "Ошибка парсинга text.lua")()(Page, text, Library)
+            local targetUrl = baseUrl .. "text.lua" .. optCache
+            local code = assert(game:HttpGet(targetUrl), "Не удалось загрузить text.lua")
+            return assert(loadstring(code), "Ошибка компиляции модуля text.lua")()(Page, text, Library)
         end
 
         function TabAPI:AddKeybind(config)
-            local targetUrl = baseUrl .. "keybind.lua"
-            local code = assert(game:HttpGet(targetUrl), "404 Not Found: " .. targetUrl)
-            return assert(loadstring(code), "Ошибка парсинга keybind.lua")()(Page, config, Library)
+            local targetUrl = baseUrl .. "keybind.lua" .. optCache
+            local code = assert(game:HttpGet(targetUrl), "Не удалось загрузить keybind.lua")
+            return assert(loadstring(code), "Ошибка компиляции модуля keybind.lua")()(Page, config, Library)
         end
 
         function TabAPI:AddSlider(config)
-            local targetUrl = baseUrl .. "slidermove.lua"
-            local code = assert(game:HttpGet(targetUrl), "404 Not Found: " .. targetUrl)
-            return assert(loadstring(code), "Ошибка парсинга slidermove.lua")()(Page, config, Library)
+            local targetUrl = baseUrl .. "slidermove.lua" .. optCache
+            local code = assert(game:HttpGet(targetUrl), "Не удалось загрузить slidermove.lua")
+            return assert(loadstring(code), "Ошибка компиляции модуля slidermove.lua")()(Page, config, Library)
         end
 
         function TabAPI:AddColorpicker(config)
-            local targetUrl = baseUrl .. "colorpicker.lua"
-            local code = assert(game:HttpGet(targetUrl), "404 Not Found: " .. targetUrl)
-            return assert(loadstring(code), "Ошибка парсинга colorpicker.lua")()(Page, config, Library)
+            local targetUrl = baseUrl .. "colorpicker.lua" .. optCache
+            local code = assert(game:HttpGet(targetUrl), "Не удалось загрузить colorpicker.lua")
+            return assert(loadstring(code), "Ошибка компиляции модуля colorpicker.lua")()(Page, config, Library)
         end
 
         return TabAPI
