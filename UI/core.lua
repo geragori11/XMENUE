@@ -1,4 +1,3 @@
--- core.lua
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
@@ -7,27 +6,23 @@ local Mouse = LocalPlayer:GetMouse()
 
 local Library = {
     CurrentTab = nil,
-    TooltipDelay = 0.6 -- Время в секундах, через которое появится описание
+    TooltipDelay = 0.6
 }
 
--- Функция для создания плавных анимаций
 function Library:Tween(object, info, properties)
     local tween = TweenService:Create(object, TweenInfo.new(unpack(info)), properties)
     tween:Play()
     return tween
 end
 
--- Создание главного окна
 function Library:CreateWindow(config)
     local WindowName = config.Name or "Xeno Menu"
     
-    -- Корневой GUI элемент
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "RayfieldStyleMenu"
     ScreenGui.Parent = game:CoreGui
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-    -- Главный фрейм
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
     MainFrame.Position = UDim2.new(0.5, -275, 0.5, -175)
@@ -40,10 +35,11 @@ function Library:CreateWindow(config)
     UICorner.CornerRadius = UDim.new(0, 8)
     UICorner.Parent = MainFrame
 
-    -- Тултип (Всплывающее описание)
+    -- Тултип (Исправлен на AutomaticSize)
     local Tooltip = Instance.new("TextLabel")
     Tooltip.Name = "Tooltip"
-    Tooltip.Size = UDim2.new(0, 180, 0, 'auto')
+    Tooltip.Size = UDim2.new(0, 180, 0, 0)
+    Tooltip.AutomaticSize = Enum.AutomaticSize.Y
     Tooltip.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     Tooltip.TextColor3 = Color3.fromRGB(200, 200, 200)
     Tooltip.Font = Enum.Font.Gotham
@@ -60,7 +56,7 @@ function Library:CreateWindow(config)
     TooltipPadding.PaddingRight = UDim.new(0, 6)
     TooltipPadding.Parent = Tooltip
 
-    -- Логика перетаскивания окна (Drag)
+    -- Логика Drag (Перетаскивание)
     local dragging, dragInput, dragStart, startPos
     MainFrame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -82,7 +78,6 @@ function Library:CreateWindow(config)
         end
     end)
 
-    -- Боковое меню для Вкладок (Tabs)
     local SideBar = Instance.new("Frame")
     SideBar.Name = "SideBar"
     SideBar.Size = UDim2.new(0, 150, 1, 0)
@@ -99,7 +94,6 @@ function Library:CreateWindow(config)
     TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
     TabLayout.Padding = UDim.new(0, 5)
 
-    -- Контейнер для страниц
     local Container = Instance.new("Frame")
     Container.Name = "Container"
     Container.Position = UDim2.new(0, 160, 0, 10)
@@ -107,7 +101,6 @@ function Library:CreateWindow(config)
     Container.BackgroundTransparency = 1
     Container.Parent = MainFrame
 
-    -- Функция добавления описания к элементам
     function Library:AddTooltip(element, text)
         local hoverToken = 0
         element.MouseEnter:Connect(function()
@@ -118,7 +111,6 @@ function Library:CreateWindow(config)
                 Tooltip.Text = text
                 Tooltip.Visible = true
                 
-                -- Движение тултипа за мышкой
                 local connection
                 connection = game:GetService("RunService").RenderStepped:Connect(function()
                     if not Tooltip.Visible then connection:Disconnect() return end
@@ -132,7 +124,6 @@ function Library:CreateWindow(config)
         end)
     end
 
-    -- Метод создания вкладки (Tab) как в Rayfield
     local WindowAPI = {}
     function WindowAPI:CreateTab(tabName)
         local TabButton = Instance.new("TextButton")
@@ -173,27 +164,32 @@ function Library:CreateWindow(config)
             Library.CurrentTab = {Page = Page, Button = TabButton}
         end
 
-        -- Подгружаем модули и передаем им контекст страницы
         local TabAPI = {}
-        
-        -- Сюда будут инжектиться функции из папки options/
-        -- Для локальных тестов можно подключить их напрямую:
+        -- Твой базовый путь к опциям на GitHub
+        local baseUrl = "https://raw.githubusercontent.com/geragori11/XMENUE/refs/heads/main/UI/options/"
         
         function TabAPI:AddText(text)
-            -- Ссылка на options/text.lua
-            return loadstring(game:HttpGet("ссылка_на_github/options/text.lua"))()(Page, text, Library)
+            local targetUrl = baseUrl .. "text.lua"
+            local code = assert(game:HttpGet(targetUrl), "404 Not Found: " .. targetUrl)
+            return assert(loadstring(code), "Ошибка парсинга text.lua")()(Page, text, Library)
         end
 
         function TabAPI:AddKeybind(config)
-            return loadstring(game:HttpGet("ссылка_на_github/options/keybind.lua"))()(Page, config, Library)
+            local targetUrl = baseUrl .. "keybind.lua"
+            local code = assert(game:HttpGet(targetUrl), "404 Not Found: " .. targetUrl)
+            return assert(loadstring(code), "Ошибка парсинга keybind.lua")()(Page, config, Library)
         end
 
         function TabAPI:AddSlider(config)
-            return loadstring(game:HttpGet("ссылка_на_github/options/slidermove.lua"))()(Page, config, Library)
+            local targetUrl = baseUrl .. "slidermove.lua"
+            local code = assert(game:HttpGet(targetUrl), "404 Not Found: " .. targetUrl)
+            return assert(loadstring(code), "Ошибка парсинга slidermove.lua")()(Page, config, Library)
         end
 
         function TabAPI:AddColorpicker(config)
-            return loadstring(game:HttpGet("ссылка_на_github/options/colorpicker.lua"))()(Page, config, Library)
+            local targetUrl = baseUrl .. "colorpicker.lua"
+            local code = assert(game:HttpGet(targetUrl), "404 Not Found: " .. targetUrl)
+            return assert(loadstring(code), "Ошибка парсинга colorpicker.lua")()(Page, config, Library)
         end
 
         return TabAPI
