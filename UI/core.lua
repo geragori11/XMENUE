@@ -382,6 +382,10 @@ function Library:CreateWindow(config)
             return loadModule("colorpicker.lua", Page, config, Library)
         end
 
+        function TabAPI:AddOneslider(config)
+            return loadModule("Oneslider.lua", Page, config, Library)
+        end
+
         return TabAPI
     end
 
