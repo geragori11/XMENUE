@@ -1,3 +1,4 @@
+-- UI/core.lua
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
@@ -35,7 +36,7 @@ function Library:CreateWindow(config)
     UICorner.CornerRadius = UDim.new(0, 8)
     UICorner.Parent = MainFrame
 
-    -- Тултип (Исправлен на AutomaticSize)
+    -- Тултип (Полностью исправлен размер и синтаксис)
     local Tooltip = Instance.new("TextLabel")
     Tooltip.Name = "Tooltip"
     Tooltip.Size = UDim2.new(0, 180, 0, 0)
@@ -56,7 +57,7 @@ function Library:CreateWindow(config)
     TooltipPadding.PaddingRight = UDim.new(0, 6)
     TooltipPadding.Parent = Tooltip
 
-    -- Логика Drag (Перетаскивание)
+    -- Логика перетаскивания окна (Drag)
     local dragging, dragInput, dragStart, startPos
     MainFrame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -165,7 +166,6 @@ function Library:CreateWindow(config)
         end
 
         local TabAPI = {}
-        -- Твой базовый путь к опциям на GitHub
         local baseUrl = "https://raw.githubusercontent.com/geragori11/XMENUE/refs/heads/main/UI/options/"
         
         function TabAPI:AddText(text)
